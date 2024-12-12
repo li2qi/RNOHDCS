@@ -43,7 +43,7 @@ function SslPingDemo() : React.JSX.Element{
                         // your certificates array (needed only in android) ios will pick it automatically
                         sslPinning: {
                           certs: [
-                            "sha256/kPwnudZVhc+iC/fTd3OPph8uugk1YN5ZsJDAeM2P4UU="
+                            "sha256/seHAF9YGeG+3QCvsh2CnsC4dt3aw9I6tW6gSBZSUptI="
                           ]
                         },
                         headers: {
@@ -113,7 +113,7 @@ function SslPingDemo() : React.JSX.Element{
                         pkPinning: true,
                         sslPinning: {
                           certs: [
-                            "sha256/kPwnudZVhc+iC/fTd3OPph8uugk1YN5ZsJDAeM2P4UU="
+                            "sha256/seHAF9YGeG+3QCvsh2CnsC4dt3aw9I6tW6gSBZSUptI="
                           ]
                         },
                         headers: {
