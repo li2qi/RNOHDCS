@@ -1,85 +1,75 @@
+import React from 'react';
 import Animated, {
-  KeyboardState,
   useAnimatedKeyboard,
   useAnimatedStyle,
+  withTiming,
+  useSharedValue,
+  Easing,
+  withRepeat
 } from '@react-native-oh-tpl/react-native-reanimated';
-import {
-  Button,
-  Keyboard,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  View,
-} from 'react-native';
+import { StyleSheet, TextInput, View, useColorScheme } from 'react-native';
 
-import React from 'react';
-
-const BOX_SIZE = 50;
-
-function NestedView() {
-  useAnimatedKeyboard();
-  return <View style={styles.nestedView} />;
-}
 export default function AnimatedKeyboardExample() {
+  const colorScheme = useColorScheme();
   const keyboard = useAnimatedKeyboard();
-  const OPENING = KeyboardState.OPENING;
-  const style = useAnimatedStyle(() => {
-    const color = keyboard.state.value === OPENING ? 'red' : 'blue';
+  const randomWidth = useSharedValue(50);
+  const offset = useSharedValue<number>(100);
+  const config = {
+    duration: 500,
+    easing: Easing.bezierFn(0.5, 0.01, 0, 1),
+  };
+  const animatedStyles = useAnimatedStyle(() => ({
+    transform: [{ translateY: -keyboard.height.value }],
+  }));
+  const animatedStylesOffset = useAnimatedStyle(() => ({
+    transform: [{ translateX: offset.value }],
+  }));
+  const startAnimation = () => {
+    offset.value = withRepeat(
+      withTiming(offset.value > 0 ? 0 : 120, { duration: 1500 }),
+      -1,
+      true
+    );
+  };
 
-    return {
-      backgroundColor: color,
-    };
-  });
-  const translateStyle = useAnimatedStyle(() => {
-    return {
-      transform: [{ translateY: -keyboard.height.value }],
-    };
-  });
-  const [shouldShowNestedView, setShouldShowNestedView] = React.useState(false);
+  React.useEffect(() => {
+    startAnimation();
+  }, []);
   return (
-    <ScrollView
-      contentContainerStyle={styles.container}
-      keyboardDismissMode="interactive"
-      scrollEnabled={false}>
-      <Animated.View style={[styles.box, style]} />
-      <Button
-        title="Toggle nested view"
-        onPress={() => {
-          setShouldShowNestedView(!shouldShowNestedView);
-        }}
-      />
-      {shouldShowNestedView ? <NestedView /> : null}
-      <Animated.View style={translateStyle}>
-        <Button
-          title="Dismiss"
-          onPress={() => {
-            Keyboard.dismiss();
-          }}
-        />
-        <TextInput style={styles.textInput} autoCorrect />
-      </Animated.View>
-    </ScrollView>
+    <Animated.View
+      style={[
+        styles.container,
+        animatedStyles,
+        { backgroundColor: colorScheme === 'light' ? '#fff' : '#000' },
+      ]}>
+       <Animated.View style={[styles.box_a, animatedStylesOffset]} />
+      <View style={styles.box}>
+        <TextInput placeholder="Text Input" />
+      </View>
+    </Animated.View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    flexDirection: 'column',
+    justifyContent: 'center',
+    borderWidth: 5,
+    borderColor: '#782aeb',
+    borderRadius: 2,
+  },
+  box: {
+    justifyContent: 'center',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 70,
+    height: 200,
+    backgroundColor: '#b58df1',
+    borderRadius: 5,
+    margin: 20,
   },
-  box: { width: BOX_SIZE, height: BOX_SIZE, marginBottom: 100 },
-  textInput: {
-    borderColor: 'blue',
-    borderStyle: 'solid',
-    borderWidth: 2,
-    height: 60,
-    width: 200,
-  },
-  nestedView: {
-    width: 100,
-    height: 100,
-    backgroundColor: '#ffff00',
+  box_a: {
+    height: 50,
+    width: 50,
+    backgroundColor: '#00ff00',
+    borderRadius: 20,
   },
 });
